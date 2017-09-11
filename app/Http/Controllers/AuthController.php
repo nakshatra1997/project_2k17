@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 //use Illuminate\Contracts\Validation\Validator;
+use App\Member;
+use App\Team;
 use Validator;
 use Illuminate\Http\Request;
 use App\User;
@@ -28,39 +30,81 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
-        $rules = [
-            'name' => 'required|max:255',
-            'email' => 'required|email|max:255|unique:users',
-            'password' => 'required|confirmed|min:6',
+//        $rules = [
+//            'name' => 'required|max:255',
+//            'email' => 'required|email|max:255|unique:users',
+//            'password' => 'required|confirmed|min:6',
+//        ];
+//        $input = $request->only(
+//            'name',
+//            'email',
+//            'password',
+//            'password_confirmation'
+//        );
+//
+//        $validator = Validator::make($input, $rules);
+//        if($validator->fails()) {
+//            $error = $validator->messages()->toJson();
+//            return response()->json(['success'=> false, 'error'=> $error]);
+//        }
+//
+//        $name = $request->name;
+//        $email = $request->email;
+//        $password = $request->password;
+//        $user = User::create(['name' => $name, 'email' => $email, 'password' => Hash::make($password)]);
+//        $verification_code = str_random(30); //Generate verification code
+//        DB::table('user_verifications')->insert(['user_id'=>$user->id,'token'=>$verification_code]);
+//        $subject = "Please verify your email address.";
+//        Mail::send('email.verify', ['name' => $name, 'verification_code' => $verification_code],
+//            function($mail) use ($email, $name, $subject){
+//                $mail->from(getenv('FROM_EMAIL_ADDRESS'), "nakshatrapradhan2013@gmail.com");
+//                $mail->to($email, $name);
+//                $mail->subject($subject);
+//            });
+        $input_team=$request->teamdetails;
+        $input_member=$request->members[0];
+        //dd($input_member);
+        $no_of_members=$input_team[0]['numbermembers'];
+
+     //dd($inputs['members']);
+        $team_details=[
+            'team_name'=>$input_team[0]['teamname'],
+            'password'=>$input_team[0]['password'],
+            'topic_id'=>$input_team[0]['topic'],
+
         ];
-        $input = $request->only(
-            'name',
-            'email',
-            'password',
-            'password_confirmation'
-        );
+       Team::create($team_details);
+        //$no_of_members++;
+        $team=Team::where('team_name','=',$team_details['team_name'])->first();
 
-        $validator = Validator::make($input, $rules);
-        if($validator->fails()) {
-            $error = $validator->messages()->toJson();
-            return response()->json(['success'=> false, 'error'=> $error]);
+        $i=-1;
+        foreach($input_member
+                as $member)
+        {
+              $i++;
+//            $team_details=
+//                ['domain'=>$member[0]['domain']];
+           // $mem=$member[$i];
+
+            $mem=[
+                'name'=>$member[0]['name'],
+                'email'=>$member[0]['email'],
+                'course'=>$member[0]['course'],
+                'year'=>$member[0]['year'],
+                'student_no'=>$member[0]['student_no'],
+                'accomodation'=>$member[0]['accomodation'],
+                'college_name'=>$member[0]['college_name'],
+                'contact_no'=>$member[0]['contact_no'],
+                'team_id'=>$team->id
+            ];
+
+
+            Member::create($mem);
+
         }
-
-        $name = $request->name;
-        $email = $request->email;
-        $password = $request->password;
-        $user = User::create(['name' => $name, 'email' => $email, 'password' => Hash::make($password)]);
-        $verification_code = str_random(30); //Generate verification code
-        DB::table('user_verifications')->insert(['user_id'=>$user->id,'token'=>$verification_code]);
-        $subject = "Please verify your email address.";
-        Mail::send('email.verify', ['name' => $name, 'verification_code' => $verification_code],
-            function($mail) use ($email, $name, $subject){
-                $mail->from(getenv('FROM_EMAIL_ADDRESS'), "nakshatrapradhan2013@gmail.com");
-                $mail->to($email, $name);
-                $mail->subject($subject);
-            });
-        return response()->json(['success'=> true, 'message'=> 'Thanks for signing up! Please check your email to complete your registration.']);
+       return response()->json(['success'=> true, 'message'=> 'Thanks for signing up! Please check your email to complete your registration.']);
     }
+    //USER VERIFICATION
     public function verifyUser($verification_code)
     {
         $check = DB::table('user_verifications')->where('token',$verification_code)->first();
