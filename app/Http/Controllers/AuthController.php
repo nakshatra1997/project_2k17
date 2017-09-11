@@ -127,7 +127,7 @@ class AuthController extends Controller
             Member::create($mem);
 
         }
-       return response()->json(['success'=> true, 'message'=> 'Thanks for signing up! Please check your email to complete your registration.']);
+       return response()->json(['success'=> true, 'message'=> 'Thanks for signing up!']);
     }
     //USER VERIFICATION
     public function verifyUser($verification_code)
