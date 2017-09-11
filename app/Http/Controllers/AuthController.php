@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 //use Illuminate\Contracts\Validation\Validator;
 use App\Member;
 use App\Team;
-use Validator;
+use Illuminate\Support\Facades\Validator;
+
 use Illuminate\Http\Request;
 use App\User;
 use Illuminate\Support\Facades\DB;
@@ -61,6 +62,30 @@ class AuthController extends Controller
 //                $mail->to($email, $name);
 //                $mail->subject($subject);
 //            });
+        $rules = [
+            'teamdetails.*.team_name' => 'required|max:50|unique:teams',
+            'teamdetails.*.domain_id' => 'required',
+            'teamdetails.*.topic_id' => 'required',
+            'teamdetails.*.password' => 'required|confirmed|min:6',
+
+            'members.*.*.*.name' => 'required',
+            'members.*.*.*.course' => 'required',
+            'members.*.*.*.year' => 'required|max:1',
+            'members.*.*.*.student_no' => 'regex:/^(\d){7}[dD\-"\s"]{0,1}$/|unique:members',
+            'members.*.*.*.accomodation' => 'required',
+            'members.*.*.*.college_name' => 'required|alpha',
+            'members.*.*.*.email' => 'required|email|unique:members',
+            'members.*.*.*.contact_no' => 'required|max:11|min:10',
+
+        ];
+
+        $inputs = $request->all();
+        $validator = Validator::make($inputs, $rules);
+
+        if($validator->fails()) {
+            $error = $validator->messages()->toJson();
+            return response()->json(['success'=> false, 'error'=> $error]);
+        }
         $input_team=$request->teamdetails;
         $input_member=$request->members[0];
         //dd($input_member);
@@ -68,9 +93,9 @@ class AuthController extends Controller
 
      //dd($inputs['members']);
         $team_details=[
-            'team_name'=>$input_team[0]['teamname'],
+            'team_name'=>$input_team[0]['team_name'],
             'password'=>$input_team[0]['password'],
-            'topic_id'=>$input_team[0]['topic'],
+            'topic_id'=>$input_team[0]['topic_id'],
 
         ];
        Team::create($team_details);
