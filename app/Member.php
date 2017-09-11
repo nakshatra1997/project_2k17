@@ -15,7 +15,8 @@ class Member extends Model
         'college_name',
         'student_no',
         'contact_no',
-        'accomodation'
+        'accomodation',
+        'teamlead'
         ];
     public $timestamps=false;
 }

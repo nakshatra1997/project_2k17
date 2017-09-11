@@ -130,9 +130,9 @@ class AuthController extends Controller
         $email_sent=Member::where('teamlead','=','1')->first();
         $email=$email_sent->email;
         $subject = "Team Registration for SCROLLS 2k17";
-        Mail::send('email.verify', ['name' => $team_name, 'team_id' => $team_details['team_id']],
+        Mail::send('email.verify', ['name' => $team_name, 'team_id' => $mem['team_id']],
             function($mail) use ($email, $team_name, $subject){
-                $mail->from("akgec-scrolls@silive.in", "SCROLLS 2k17");
+                $mail->from("nakshatrapradhan2013@gmail.com", "SCROLLS 2k17");
                 $mail->to($email,$team_name);
                 $mail->subject($subject);
             });
