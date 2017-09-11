@@ -66,7 +66,7 @@ class AuthController extends Controller
             'teamdetails.*.team_name' => 'required|max:50|unique:teams',
             'teamdetails.*.domain_id' => 'required',
             'teamdetails.*.topic_id' => 'required',
-            'teamdetails.*.password' => 'required|confirmed|min:6',
+            'teamdetails.*.password' => 'required|min:6',
 
             'members.*.*.*.name' => 'required',
             'members.*.*.*.course' => 'required',
@@ -124,20 +124,18 @@ class AuthController extends Controller
                 'team_id'=>$team->id,
                 'teamlead'=>$member[0]['teamlead']
             ];
-                  $team_name=$team_details['team_name'];
-
             Member::create($mem);
-            $email_sent=Member::where('teamlead','=','1')->first();
-            $email=$email_sent->email;
-            $subject = "Team Registration for SCROLLS 2k17";
-            Mail::send('email.verify', ['name' => $team_name, 'team_id' => $team_details['team_id']],
-                function($mail) use ($email, $team_name, $subject){
-                    $mail->from("akgec-scrolls@silive.in", "SCROLLS 2k17");
-                    $mail->to($email,$team_name);
-                    $mail->subject($subject);
-                });
-
         }
+        $team_name=$team_details['team_name'];
+        $email_sent=Member::where('teamlead','=','1')->first();
+        $email=$email_sent->email;
+        $subject = "Team Registration for SCROLLS 2k17";
+        Mail::send('email.verify', ['name' => $team_name, 'team_id' => $team_details['team_id']],
+            function($mail) use ($email, $team_name, $subject){
+                $mail->from("akgec-scrolls@silive.in", "SCROLLS 2k17");
+                $mail->to($email,$team_name);
+                $mail->subject($subject);
+            });
        return response()->json(['success'=> true, 'message'=> 'Thanks for signing up!']);
     }
     //USER VERIFICATION
