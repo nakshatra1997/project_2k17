@@ -15,7 +15,7 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 use  Illuminate\Support\Facades\Hash, Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Mail\Message;
-class AuthController extends Controller
+class AuthController extends ApiController
 {
     protected $jwt;
 
@@ -87,18 +87,22 @@ class AuthController extends Controller
         $input_team=$request->teamdetails;
         $input_member=$request->members[0];
         //dd($input_member);
-        $no_of_members=$input_team[0]['numbermembers'];
+        //$no_of_members=$input_team[0]['noofmembers'];
+        $topic_id=$input_team[0]['topic_id'];
+        $domain_id=$input_team[0]['domain_id'];
+        $id='SCROLLS'.$topic_id.$domain_id.rand(10,99).rand(1,9);
 
      //dd($inputs['members']);
         $team_details=[
             'team_name'=>$input_team[0]['team_name'],
             'password'=>Hash::make($input_team[0]['password']),
-            'topic_id'=>$input_team[0]['topic_id'],
-            'domain_id'=>$input_team[0]['domain_id'],
-            'team_id'=>'SCROLLS'.$input_team[0]['domain_id'].rand(10,99).rand(1,9),
+            'topic_id'=>$topic_id,
+            'domain_id'=>$domain_id,
+            'team_id'=>$id,
             'noofmembers'=>$input_team[0]['noofmembers']
 
         ];
+
        Team::create($team_details);
         //$no_of_members++;
         $team=Team::where('team_name','=',$team_details['team_name'])->first();
@@ -106,8 +110,6 @@ class AuthController extends Controller
         foreach($input_member
                 as $member)
         {
-
-
 
             $mem=[
                 'name'=>$member[0]['name'],
@@ -133,7 +135,7 @@ class AuthController extends Controller
                 $mail->to($email,$team_name);
                 $mail->subject($subject);
             });
-       return response()->json(['success'=> true, 'message'=> 'Thanks for signing up!']);
+       return response()->json(['success'=> true, 'message'=>$mem['team_id']]);
     }
 
     //USER VERIFICATION

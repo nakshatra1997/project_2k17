@@ -10,7 +10,9 @@ class Team extends Model
     protected $fillable=[
         'team_name',
         'password',
-        'topic_id'
+        'topic_id',
+        'team_id',
+        'domain_id'
     ];
     public $timestamps=false;
 }
