@@ -9,6 +9,6 @@ class Topic extends Model
     //
     public function domain()
     {
-        return $this->belongsTo("App\Domain", "id", 'domain_id');
+        return $this->hasOne("App\Domain","id","domain_id");
     }
 }

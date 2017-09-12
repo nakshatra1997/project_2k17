@@ -26,3 +26,6 @@ Route::group(['middleware' => ['jwt.auth']], function() {
         return response()->json(['foo'=>'bar']);
     });
 });
+Route::get('/domains/getDomains','DomainController@index');
+Route::get('/domains/detDomains/{id}/topics','DomainController@specificTopic');
+//Route::get();
