@@ -67,7 +67,6 @@ class AuthController extends Controller
             'teamdetails.*.domain_id' => 'required',
             'teamdetails.*.topic_id' => 'required',
             'teamdetails.*.password' => 'required|min:6',
-
             'members.*.*.*.name' => 'required',
             'members.*.*.*.course' => 'required',
             'members.*.*.*.year' => 'required|max:1',
@@ -76,7 +75,6 @@ class AuthController extends Controller
             'members.*.*.*.college_name' => 'required|alpha',
             'members.*.*.*.email' => 'required|email|unique:members',
             'members.*.*.*.contact_no' => 'required|max:11|min:10',
-
         ];
 
         $inputs = $request->all();
@@ -94,22 +92,21 @@ class AuthController extends Controller
      //dd($inputs['members']);
         $team_details=[
             'team_name'=>$input_team[0]['team_name'],
-            'password'=>$input_team[0]['password'],
+            'password'=>Hash::make($input_team[0]['password']),
             'topic_id'=>$input_team[0]['topic_id'],
+            'domain_id'=>$input_team[0]['domain_id'],
+            'team_id'=>'SCROLLS'.$input_team[0]['domain_id'].rand(10,99).rand(1,9),
+            'noofmembers'=>$input_team[0]['noofmembers']
 
         ];
        Team::create($team_details);
         //$no_of_members++;
         $team=Team::where('team_name','=',$team_details['team_name'])->first();
 
-        $i=-1;
         foreach($input_member
                 as $member)
         {
-              $i++;
-//            $team_details=
-//                ['domain'=>$member[0]['domain']];
-           // $mem=$member[$i];
+
 
 
             $mem=[
@@ -138,6 +135,7 @@ class AuthController extends Controller
             });
        return response()->json(['success'=> true, 'message'=> 'Thanks for signing up!']);
     }
+
     //USER VERIFICATION
     public function verifyUser($verification_code)
     {
