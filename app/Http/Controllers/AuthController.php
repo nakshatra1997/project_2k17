@@ -31,37 +31,6 @@ class AuthController extends ApiController
      */
     public function register(Request $request)
     {
-//        $rules = [
-//            'name' => 'required|max:255',
-//            'email' => 'required|email|max:255|unique:users',
-//            'password' => 'required|confirmed|min:6',
-//        ];
-//        $input = $request->only(
-//            'name',
-//            'email',
-//            'password',
-//            'password_confirmation'
-//        );
-//
-//        $validator = Validator::make($input, $rules);
-//        if($validator->fails()) {
-//            $error = $validator->messages()->toJson();
-//            return response()->json(['success'=> false, 'error'=> $error]);
-//        }
-//
-//        $name = $request->name;
-//        $email = $request->email;
-//        $password = $request->password;
-//        $user = User::create(['name' => $name, 'email' => $email, 'password' => Hash::make($password)]);
-//        $verification_code = str_random(30); //Generate verification code
-//        DB::table('user_verifications')->insert(['user_id'=>$user->id,'token'=>$verification_code]);
-//        $subject = "Please verify your email address.";
-//        Mail::send('email.verify', ['name' => $name, 'verification_code' => $verification_code],
-//            function($mail) use ($email, $name, $subject){
-//                $mail->from(getenv('FROM_EMAIL_ADDRESS'), "nakshatrapradhan2013@gmail.com");
-//                $mail->to($email, $name);
-//                $mail->subject($subject);
-//            });
         $rules = [
             'teamdetails.*.team_name' => 'required|max:50|unique:teams',
             'teamdetails.*.domain_id' => 'required',
@@ -86,13 +55,10 @@ class AuthController extends ApiController
         }
         $input_team=$request->teamdetails;
         $input_member=$request->members[0];
-        //dd($input_member);
-        //$no_of_members=$input_team[0]['noofmembers'];
         $topic_id=$input_team[0]['topic_id'];
         $domain_id=$input_team[0]['domain_id'];
         $id='SCROLLS'.$topic_id.$domain_id.rand(10,99).rand(1,9);
 
-     //dd($inputs['members']);
         $team_details=[
             'team_name'=>$input_team[0]['team_name'],
             'password'=>Hash::make($input_team[0]['password']),
@@ -104,7 +70,6 @@ class AuthController extends ApiController
         ];
 
        Team::create($team_details);
-        //$no_of_members++;
         $team=Team::where('team_name','=',$team_details['team_name'])->first();
 
         foreach($input_member
@@ -173,14 +138,16 @@ class AuthController extends ApiController
         ];
         $input = $request->only('team_id', 'password');
         $validator = Validator::make($input, $rules);
-        if($validator->fails()) {
+               if($validator->fails()) {
             $error = $validator->messages()->toJson();
             return response()->json(['success'=> false, 'error'=> $error]);
         }
         $credentials = [
             'team_id' => $request->team_id,
-            'password' => Hash::make($request->password),
+            'password' => $request->password,
                     ];
+        $token = $this->jwt->attempt($credentials);
+
         try {
             // attempt to verify the credentials and create a token for the user
             if (! $token = $this->jwt->attempt($credentials)) {
@@ -216,25 +183,25 @@ class AuthController extends ApiController
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function recover(Request $request)
-    {
-        $user = User::where('email', $request->email)->first();
-        if (!$user) {
-            $error_message = "Your email address was not found.";
-            return response()->json(['success' => false, 'error' => ['email'=> $error_message]], 401);
-        }
-        try {
-            Password::sendResetLink($request->only('email'), function (Message $message) {
-                $message->subject('Your Password Reset Link');
-            });
-        } catch (\Exception $e) {
-            //Return with error
-            $error_message = $e->getMessage();
-            return response()->json(['success' => false, 'error' => $error_message], 401);
-        }
-        return response()->json([
-            'success' => true, 'data'=> ['msg'=> 'A reset email has been sent! Please check your email.']
-        ]);
-    }
+//    public function recover(Request $request)
+//    {
+//        $user = User::where('email', $request->email)->first();
+//        if (!$user) {
+//            $error_message = "Your email address was not found.";
+//            return response()->json(['success' => false, 'error' => ['email'=> $error_message]], 401);
+//        }
+//        try {
+//            Password::sendResetLink($request->only('email'), function (Message $message) {
+//                $message->subject('Your Password Reset Link');
+//            });
+//        } catch (\Exception $e) {
+//            //Return with error
+//            $error_message = $e->getMessage();
+//            return response()->json(['success' => false, 'error' => $error_message], 401);
+//        }
+//        return response()->json([
+//            'success' => true, 'data'=> ['msg'=> 'A reset email has been sent! Please check your email.']
+//        ]);
+//    }
 
 }

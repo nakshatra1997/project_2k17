@@ -11,8 +11,6 @@ class CheckStudentController extends ApiController
     //
     public function checkStudentNo($student_no)
     {
-        // return 'mayur';
-        //if(Member::where('student_no',$request['student_no'])->exists())
         $user = Member::where('student_no', $student_no)->first();
         if($user)
         {
@@ -30,7 +28,6 @@ class CheckStudentController extends ApiController
     public function checkEmail(Request $request)
     {
         $email = Member::where('email', $request->email)->first();
-        //dd($email);
         if($email)
         {
             return $this->errorResponse('This email id already exists',422);
