@@ -26,7 +26,7 @@ Route::group(['middleware' => ['jwt.auth']], function() {
         return response()->json(['foo'=>'bar']);
     });
 });
-Route::get('/domains/getDomains','DomainController@index');
-Route::get('/domains/detDomains/{id}/topics','DomainController@specificTopic');
+Route::get('/getdomains','DomainController@index');
+Route::get('/getdomains/{id}/topics','DomainController@specificTopic');
 Route::get('/checkStudentNo/{student_no}','CheckStudentController@checkStudentNo');
 Route::post('/checkEmail','CheckStudentController@checkEmail');

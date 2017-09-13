@@ -18,6 +18,7 @@ class CreateTeamsTable extends Migration
             $table->string('team_name');
 //            $table->integer('leader_id')->unsigned();
             //$table->string('synopsis');
+              $table->integer('noofmembers');
             $table->string('password');
             $table->rememberToken();
             //$table->text('api_token');
