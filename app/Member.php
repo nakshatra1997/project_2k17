@@ -19,4 +19,5 @@ class Member extends Model
         'teamlead'
         ];
     public $timestamps=false;
+
 }

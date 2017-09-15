@@ -16,4 +16,9 @@ class Team extends  Authenticatable
         'domain_id'
     ];
     public $timestamps=false;
+    public function members()
+    {
+        return $this->hasMany('App\Member');
+    }
+
 }

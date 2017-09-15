@@ -16,12 +16,9 @@ class CreateTeamsTable extends Migration
           Schema::create('teams', function(Blueprint $table){
             $table->increments('id')->unsigned();
             $table->string('team_name');
-//            $table->integer('leader_id')->unsigned();
-            //$table->string('synopsis');
               $table->integer('noofmembers');
             $table->string('password');
             $table->rememberToken();
-            //$table->text('api_token');
               $table->string('team_id');
               $table->boolean('shortlisted')->default(0);
             $table->integer('topic_id')->unsigned();

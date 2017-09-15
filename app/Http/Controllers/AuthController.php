@@ -31,6 +31,8 @@ class AuthController extends ApiController
      */
     public function register(Request $request)
     {
+        //These rules are done according to the old json
+        //updated rules according to the new json are updated in another file named as authcontroller
         $rules = [
             'teamdetails.*.team_name' => 'required|max:50|unique:teams',
             'teamdetails.*.domain_id' => 'required',
@@ -39,7 +41,7 @@ class AuthController extends ApiController
             'members.*.*.*.name' => 'required',
             'members.*.*.*.course' => 'required',
             'members.*.*.*.year' => 'required|max:1',
-            'members.*.*.*.student_no' => 'regex:/^(\d){7}[dD\-"\s"]{0,1}$/|unique:members',
+            'members.*.*.*.student_no' => 'nullable|regex:/^(\d){7}[dD\-"\s"]{0,1}$/|unique:members',
             'members.*.*.*.accomodation' => 'required',
             'members.*.*.*.college_name' => 'required|alpha',
             'members.*.*.*.email' => 'required|email|unique:members',
@@ -102,28 +104,8 @@ class AuthController extends ApiController
             });
        return response()->json(['success'=> true, 'message'=>$mem['team_id']]);
     }
+//NOW LOGIN*********************************************************************************************
 
-    //USER VERIFICATION
-    public function verifyUser($verification_code)
-    {
-        $check = DB::table('user_verifications')->where('token',$verification_code)->first();
-        if(!is_null($check)){
-            $user = User::find($check->user_id);
-            if($user->is_verified == 1){
-                return response()->json([
-                    'success'=> true,
-                    'message'=> 'Account already verified..'
-                ]);
-            }
-            $user->update(['is_verified' => 1]);
-            DB::table('user_verifications')->where('token',$verification_code)->delete();
-            return response()->json([
-                'success'=> true,
-                'message'=> 'You have successfully verified your email address.'
-            ]);
-        }
-        return response()->json(['success'=> false, 'error'=> "Verification code is invalid."]);
-    }
     /**
      * API Login, on success return JWT Auth token
      *
@@ -160,6 +142,9 @@ class AuthController extends ApiController
         // all good so return the token
         return response()->json(['success' => true, 'data'=> [ 'token' => $token ]]);
     }
+
+
+    //NOW LOGOUT**************************************************************************************************
     /**
      * Log out
      * Invalidate the token, so user cannot use it anymore
@@ -177,31 +162,4 @@ class AuthController extends ApiController
             return response()->json(['success' => false, 'error' => 'Failed to logout, please try again.'], 500);
         }
     }
-    /**
-     * API Recover Password
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-//    public function recover(Request $request)
-//    {
-//        $user = User::where('email', $request->email)->first();
-//        if (!$user) {
-//            $error_message = "Your email address was not found.";
-//            return response()->json(['success' => false, 'error' => ['email'=> $error_message]], 401);
-//        }
-//        try {
-//            Password::sendResetLink($request->only('email'), function (Message $message) {
-//                $message->subject('Your Password Reset Link');
-//            });
-//        } catch (\Exception $e) {
-//            //Return with error
-//            $error_message = $e->getMessage();
-//            return response()->json(['success' => false, 'error' => $error_message], 401);
-//        }
-//        return response()->json([
-//            'success' => true, 'data'=> ['msg'=> 'A reset email has been sent! Please check your email.']
-//        ]);
-//    }
-
 }
